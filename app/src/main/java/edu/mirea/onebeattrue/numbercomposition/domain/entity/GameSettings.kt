@@ -1,6 +1,5 @@
 package edu.mirea.onebeattrue.numbercomposition.domain.entity
 
-import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
