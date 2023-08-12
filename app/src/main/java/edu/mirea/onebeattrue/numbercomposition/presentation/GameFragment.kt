@@ -14,16 +14,17 @@ import edu.mirea.onebeattrue.numbercomposition.databinding.FragmentGameBinding
 import edu.mirea.onebeattrue.numbercomposition.domain.entity.GameResult
 import edu.mirea.onebeattrue.numbercomposition.domain.entity.Level
 import edu.mirea.onebeattrue.numbercomposition.presentation.viewmodels.GameViewModel
+import edu.mirea.onebeattrue.numbercomposition.presentation.viewmodels.GameViewModelFactory
 
 class GameFragment : Fragment() {
 
     private lateinit var level: Level
+
+    private val viewModelFactory: GameViewModelFactory by lazy {
+        GameViewModelFactory(requireActivity().application, level)
+    }
     private val viewModel: GameViewModel by lazy { // ленивая инициализация (инициализируется при первом обращении к данному объекту)
-        ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory
-                .getInstance(requireActivity().application)
-        )[GameViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[GameViewModel::class.java]
     }
 
     private val tvOptions by lazy {
@@ -59,7 +60,6 @@ class GameFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
         setClickListenersToOptions()
-        viewModel.startGame(level)
     }
 
     private fun setClickListenersToOptions() {
