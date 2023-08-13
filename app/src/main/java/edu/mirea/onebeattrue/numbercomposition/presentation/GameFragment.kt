@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import edu.mirea.onebeattrue.numbercomposition.R
 import edu.mirea.onebeattrue.numbercomposition.databinding.FragmentGameBinding
 import edu.mirea.onebeattrue.numbercomposition.domain.entity.GameResult
@@ -118,10 +119,8 @@ class GameFragment : Fragment() {
     }
 
     private fun launchGameFinishedFragment(gameResult: GameResult) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFinishedFragment.getInstance(gameResult))
-            .addToBackStack(null)
-            .commit()
+        val args = Bundle().apply { putParcelable(GameFinishedFragment.KEY_GAME_RESULT, gameResult) }
+        findNavController().navigate(R.id.action_gameFragment_to_gameFinishedFragment, args)
     }
 
     private fun parseArgs() {
@@ -131,7 +130,7 @@ class GameFragment : Fragment() {
     }
 
     companion object {
-        private const val KEY_LEVEL = "level"
+        const val KEY_LEVEL = "level"
         const val NAME = "GameFragment"
 
         fun newInstance(level: Level): GameFragment {
