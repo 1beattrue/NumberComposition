@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import edu.mirea.onebeattrue.numbercomposition.R
 import edu.mirea.onebeattrue.numbercomposition.databinding.FragmentGameBinding
 import edu.mirea.onebeattrue.numbercomposition.domain.entity.GameResult
@@ -17,11 +19,10 @@ import edu.mirea.onebeattrue.numbercomposition.presentation.viewmodels.GameViewM
 import edu.mirea.onebeattrue.numbercomposition.presentation.viewmodels.GameViewModelFactory
 
 class GameFragment : Fragment() {
-
-    private lateinit var level: Level
+    private val args by navArgs<GameFragmentArgs>()
 
     private val viewModelFactory: GameViewModelFactory by lazy {
-        GameViewModelFactory(requireActivity().application, level)
+        GameViewModelFactory(requireActivity().application, args.level)
     }
     private val viewModel: GameViewModel by lazy { // ленивая инициализация (инициализируется при первом обращении к данному объекту)
         ViewModelProvider(this, viewModelFactory)[GameViewModel::class.java]
@@ -41,11 +42,6 @@ class GameFragment : Fragment() {
     private var _binding: FragmentGameBinding? = null
     private val binding: FragmentGameBinding
         get() = _binding ?: throw RuntimeException("FragmentGameBinding == null")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseArgs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,31 +114,8 @@ class GameFragment : Fragment() {
     }
 
     private fun launchGameFinishedFragment(gameResult: GameResult) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFinishedFragment.getInstance(gameResult))
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun parseArgs() {
-        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
-            level = it
-        }
-    }
-
-    companion object {
-        private const val KEY_LEVEL = "level"
-        const val NAME = "GameFragment"
-
-        fun newInstance(level: Level): GameFragment {
-            return GameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(
-                        KEY_LEVEL,
-                        level
-                    ) // enum class неявно реализует интерфейс Serializable
-                }
-            }
-        }
+        findNavController().navigate(
+            GameFragmentDirections.actionGameFragmentToGameFinishedFragment(gameResult)
+        )
     }
 }
